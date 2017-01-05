@@ -16,12 +16,12 @@ TRAIN_DIR=/tmp/lenet-model
 DATASET_DIR=/tmp/mnist
 
 # Download the dataset
-python download_and_convert_data.py \
+python3 download_and_convert_data.py \
   --dataset_name=mnist \
   --dataset_dir=${DATASET_DIR}
 
 # Run training.
-python train_image_classifier.py \
+python3 train_image_classifier.py \
   --train_dir=${TRAIN_DIR} \
   --dataset_name=mnist \
   --dataset_split_name=train \
@@ -39,7 +39,7 @@ python train_image_classifier.py \
   --weight_decay=0
 
 # Run evaluation.
-python eval_image_classifier.py \
+python3 eval_image_classifier.py \
   --checkpoint_path=${TRAIN_DIR} \
   --eval_dir=${TRAIN_DIR} \
   --dataset_name=mnist \

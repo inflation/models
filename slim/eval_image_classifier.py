@@ -21,6 +21,8 @@ from __future__ import print_function
 import math
 import tensorflow as tf
 
+import six
+
 from datasets import dataset_factory
 from nets import nets_factory
 from preprocessing import preprocessing_factory
@@ -148,19 +150,19 @@ def main(_):
       variables_to_restore = slim.get_variables_to_restore()
 
     predictions = tf.argmax(logits, 1)
-    labels = tf.squeeze(labels)
+    labels = tf.reshape(labels, [-1, 1])
 
     # Define the metrics:
     names_to_values, names_to_updates = slim.metrics.aggregate_metric_map({
         'Accuracy': slim.metrics.streaming_accuracy(predictions, labels),
-        'Recall@5': slim.metrics.streaming_recall_at_k(
+        'Recall@5': slim.metrics.streaming_sparse_recall_at_k(
             logits, labels, 5),
     })
 
     # Print the summaries to screen.
-    for name, value in names_to_values.iteritems():
+    for name, value in six.iteritems(names_to_values):
       summary_name = 'eval/%s' % name
-      op = tf.scalar_summary(summary_name, value, collections=[])
+      op = tf.summary.scalar(summary_name, value, collections=[])
       op = tf.Print(op, [value], summary_name)
       tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
 
@@ -183,7 +185,7 @@ def main(_):
         checkpoint_path=checkpoint_path,
         logdir=FLAGS.eval_dir,
         num_evals=num_batches,
-        eval_op=names_to_updates.values(),
+        eval_op=names_to_updates,
         variables_to_restore=variables_to_restore)
 
 
